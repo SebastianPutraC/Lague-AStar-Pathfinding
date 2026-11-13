@@ -1,0 +1,48 @@
+Okay so this optimization is incredible, however there is one major caveat with the way it's implemented here. It creates a lot of garbage since you're creating a new massive array of nodes 
+every time you calculate a new path. So when I switched from using a list (Which I was clearing before each calculation instead of making a new one) to this, the function jumped from generating 
+almost zero bytes of garbage to almost 10kb! However, with a few tweaks I was able to completely get rid of the need to create a new instance of the openSet every calculation and use a 
+Clear function instead. Now I have the performance gain of the heap and almost no garbage!
+
+First off, I added a clear function to the heap, which is literally just one line of code:
+
+public void Clear()
+{ 
+    currentItemCount = 0;
+}
+
+There is no need to set all the old items to null or reset them with new or anything like that. By setting that to zero, no functions in Heap, with one exception, will ever look beyond 
+that value in the array and so even though it may still hold the data of nodes from previous calculations, they will never actually interfere with subsequent calculations, since when 
+you add items to the heap the old ones will simply be replaced. The one exception to this however, is with the Contains function. You will need to change this to:
+
+public bool Contains(T item)
+{
+    if (item.HeapIndex < currentItemCount)
+    {
+        return Equals(items[item.HeapIndex], item);
+    } else
+    {
+        return false;
+    }
+}
+
+All I did here was add a check to make sure the node you're looking for currently has a heapIndex value within the curentItemCount. If it does not then there is no way it could be 
+contained in items *since the last time the heap was cleared*. Without this check, this function could return true when it shouldn't because it might just find that an item stored from a 
+prior calculation matches (Since again, Clear does not actually wipe all the old data from the heap, it simply makes the functions think there are zero items in it so they ignore the data. 
+This function didn't ignore data beyond currentItemCount, but with this change now it does!).
+
+With these changes made to the heap class, you'll want to get rid of "Heap<Node> openSet = new Heap<Node>(grid.MaxSize);"
+each calculation and replace it with "openSet.Clear();" Of course you'll then need to add "private Heap<Node> openSet;" to the beginning of your path finding class to make it a 
+private non-local variable. Finally, you'll just need to make sure you initialize it with something along the lines of "openSet = new Heap<Node>(grid.MaxSize);" before you try to 
+make any calculations, otherwise you'll get an error. Just be sure to do that initialization as little as possible, because that's what caused the problem in the first place, 
+it creates a ton of garbage! It might vary depending on what you're trying to accomplish but you should really only have to do it once each time you load a level or grid or whatever.
+
+I also recommend doing something similar with the closed set as well. Make it a private non-local variable at the beginning of your program like with openSet 
+
+(So "private HashSet<TileController> closedSet = new HashSet<TileController>();") 
+
+New is used here because it does not really matter when or how we make a new instance with this HashSet, we just need one so this variable isn't null.). Then when finding a new path, use 
+
+"closedSet.Clear()" 
+
+instead of making a new closed set. Again, this avoids creating unnecessary garbage. With these changes, just be careful about the fact that you will now be able to access openSet and 
+closedSet in other functions of the class. You probably don't want to be messing with them outside of the path finding function.Hope this helps someone!

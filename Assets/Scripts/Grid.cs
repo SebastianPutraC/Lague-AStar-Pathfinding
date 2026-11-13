@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Grid : MonoBehaviour
@@ -17,6 +18,9 @@ public class Grid : MonoBehaviour
     float nodeDiameter;
     int gridSizeX;
     int gridSizeY; // Y is pretty much Z 
+
+    //Showing path visual on the map
+    public List<Node> path;
 
     private void Start()
     {
@@ -49,10 +53,39 @@ public class Grid : MonoBehaviour
                 //Check for unwalkable obstacle
                 bool walkable = !(Physics.CheckSphere(worldPoint, nodeRadius, unwalkableMask));
 
-                //The world point is now registered on the grid
-                grid[x, y] = new Node(walkable, worldPoint);
+                //The world point is now registered on the grid, added the x and y so that the node know which node on grid
+                grid[x, y] = new Node(walkable, worldPoint, x, y);
             }
         }
+    }
+
+    public List<Node> GetNeighbours(Node node)
+    {
+        List<Node> neighbours = new List<Node>();
+
+        //Search by 3x3 area around the center node (As parameter)
+        for (int x = -1; x <= 1; x++)
+        {
+            for (int y = -1; y <= 1; y++)
+            {
+                if (x == 0 && y == 0) //this is the center node, dont return this
+                {
+                    continue;
+                }
+
+                int checkX = node.gridX + x;
+                int checkY = node.gridY + y;
+
+                //Grid is inside the already set grid area
+                if (checkX >= 0 && checkX < gridSizeX
+                    && checkY >= 0 && checkY < gridSizeY)
+                {
+                    neighbours.Add(grid[checkX, checkY]);
+                }
+            }
+        }
+
+        return neighbours;
     }
 
     //Calculating where the exact node based on the world position
@@ -89,6 +122,13 @@ public class Grid : MonoBehaviour
                 if (playerNode == n)
                 {
                     Gizmos.color = Color.cyan;
+                }
+                if (path != null)
+                {
+                    if (path.Contains(n))
+                    {
+                        Gizmos.color = Color.black;
+                    }
                 }
                 //The 0.1f is for gaps between the cubes
                 Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - 0.1f));

@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System.Diagnostics;
+using UnityEngine.InputSystem;
 
 public class Pathfinding : MonoBehaviour
 {
@@ -15,23 +17,34 @@ public class Pathfinding : MonoBehaviour
 
     private void Update()
     {
-        FindPath(seeker.position, target.position);
+        if (Keyboard.current.spaceKey.wasPressedThisFrame)
+        {
+            FindPath(seeker.position, target.position);
+        }
     }
 
     private void FindPath(Vector3 startPos, Vector3 targetPos)
     {
+        //Tools to compare which is faster, heap or list
+        Stopwatch sw = new Stopwatch();
+        sw.Start();
+
         Node startNode = grid.NodeFromWorldPoint(startPos);
         Node targetNode = grid.NodeFromWorldPoint(targetPos);
 
         // Setup
-        List<Node> openSet = new List<Node>();
+        //List<Node> openSet = new List<Node>();
+
+        Heap<Node> openSet = new Heap<Node>(grid.MaxSize);
         HashSet<Node> closedSet = new HashSet<Node>();
+
         openSet.Add(startNode);
 
         //Get the lowest F cost
         while (openSet.Count > 0)
         {
-            Node currentNode = openSet[0];
+            //For startNode with List
+            /*Node currentNode = openSet[0];
             for (int i = 1; i < openSet.Count; i++)
             {
                 if (openSet[i].fCost < currentNode.fCost // lower fCost
@@ -42,12 +55,19 @@ public class Pathfinding : MonoBehaviour
                 }
             }
 
-            openSet.Remove(currentNode);
+            openSet.Remove(currentNode);*/
+
+            //Using the Heap function
+            Node currentNode = openSet.RemoveFirst();
+
             closedSet.Add(currentNode);
 
             //Reached the target
             if (currentNode == targetNode)
             {
+                sw.Stop();
+                UnityEngine.Debug.Log("Path Found : " + sw.ElapsedMilliseconds + " ms");
+
                 //Retracing the path by checking on each nodes parent 
                 RetracePath(startNode, targetNode);
                 return;

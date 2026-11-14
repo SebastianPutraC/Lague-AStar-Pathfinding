@@ -27,12 +27,12 @@ public class Pathfinding : MonoBehaviour
         }*/
     }
 
-    public void StartFindPath(Vector3 startPos, Vector3 targetPos)
+    /*public void StartFindPath(Vector3 startPos, Vector3 targetPos)
     {
         StartCoroutine(FindPath(startPos, targetPos));
-    }
+    }*/
 
-    private IEnumerator FindPath(Vector3 startPos, Vector3 targetPos)
+    public void FindPath(PathRequest request, Action<PathResult> callback)
     {
         //Tools to compare which is faster, heap or list
         Stopwatch sw = new Stopwatch();
@@ -41,8 +41,8 @@ public class Pathfinding : MonoBehaviour
         Vector3[] waypoints = new Vector3[0];
         bool pathSuccess = false;
 
-        Node startNode = grid.NodeFromWorldPoint(startPos);
-        Node targetNode = grid.NodeFromWorldPoint(targetPos);
+        Node startNode = grid.NodeFromWorldPoint(request.pathStart);
+        Node targetNode = grid.NodeFromWorldPoint(request.pathEnd);
 
         // Setup
         //List<Node> openSet = new List<Node>();
@@ -118,14 +118,14 @@ public class Pathfinding : MonoBehaviour
                 }
             }
         }
-
-        yield return null;
         if(pathSuccess)
         {
             //Retracing the path by checking on each nodes parent 
             waypoints = RetracePath(startNode, targetNode);
+            pathSuccess = waypoints.Length > 0;
         }
-        requestManager.FinishedProcessingpath(waypoints, pathSuccess);
+        callback(new PathResult(waypoints, pathSuccess, request.callback));
+        //requestManager.FinishedProcessingpath(waypoints, pathSuccess);
     }
 
     private Vector3[] RetracePath(Node startNode, Node endNode)

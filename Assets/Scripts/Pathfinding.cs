@@ -95,7 +95,7 @@ public class Pathfinding : MonoBehaviour
                     }
 
                     int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbour)
-                        + neighbour.movementPenaly; // Newly added movement penalty for bogs or roads
+                        + neighbour.movementPenalty; // Newly added movement penalty for bogs or roads
 
                     // Check if surrounding nodes gCost can be lowered or its not part of the openSet yet
                     if (newMovementCostToNeighbour < neighbour.gCost || !openSet.Contains(neighbour))

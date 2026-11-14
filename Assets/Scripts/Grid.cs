@@ -1,6 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public class TerrainType
+{
+    public LayerMask terrainMask;
+    public int terrainPenalty;
+}
+
 public class Grid : MonoBehaviour
 {
     //Player stuff is used to check for the node position in the map
@@ -14,6 +21,11 @@ public class Grid : MonoBehaviour
 
     //Radius that create distance between other nodes
     public float nodeRadius;
+
+    public TerrainType[] walkableRegions;
+    private LayerMask walkableMask;
+    Dictionary<int, int> walkableRegionsDictionary = new Dictionary<int, int>();
+
     Node[,] grid;
 
     float nodeDiameter;
@@ -32,6 +44,16 @@ public class Grid : MonoBehaviour
         //Diameter is 0.5 (0.25 *2) so there's 60 (0 - 59) 
         gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
         gridSizeY = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
+
+        foreach(TerrainType region in walkableRegions)
+        {
+            //Combine every layer on walkableRegions to be registered on walkableMask
+            walkableMask.value |= region.terrainMask.value;
+
+            //Calculation is converting binary to layer index
+            walkableRegionsDictionary.Add((int)Mathf.Log(region.terrainMask.value, 2), region.terrainPenalty);
+        }
+
         CreateGrid();
     }
 
@@ -62,8 +84,21 @@ public class Grid : MonoBehaviour
                 //Check for unwalkable obstacle
                 bool walkable = !(Physics.CheckSphere(worldPoint, nodeRadius, unwalkableMask));
 
+                int movementPenalty = 0;
+
+                if (walkable)
+                {
+                    //Ray from 10 y above to fire down
+                    Ray ray = new Ray(worldPoint + Vector3.up * 10, Vector3.down);
+                    RaycastHit hit;
+                    if (Physics.Raycast(ray, out hit, 20, walkableMask))
+                    {
+                        walkableRegionsDictionary.TryGetValue(hit.collider.gameObject.layer, out movementPenalty);
+                    }
+                }
+
                 //The world point is now registered on the grid, added the x and y so that the node know which node on grid
-                grid[x, y] = new Node(walkable, worldPoint, x, y);
+                grid[x, y] = new Node(walkable, worldPoint, x, y, movementPenalty);
             }
         }
     }

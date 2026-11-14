@@ -534,6 +534,7 @@ GameObject:
   - component: {fileID: 549916279}
   - component: {fileID: 549916280}
   - component: {fileID: 549916281}
+  - component: {fileID: 549916282}
   m_Layer: 0
   m_Name: AStar
   m_TagString: Untagged
@@ -569,10 +570,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Grid
   player: {fileID: 1230804117}
+  displayGridGizmos: 0
   unwalkableMask:
     serializedVersion: 2
     m_Bits: 64
-  gridWorldSize: {x: 30, y: 30}
+  gridWorldSize: {x: 70, y: 70}
   nodeRadius: 0.25
 --- !u!114 &549916281
 MonoBehaviour:
@@ -588,6 +590,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Pathfinding
   seeker: {fileID: 758429277}
   target: {fileID: 1771132487}
+--- !u!114 &549916282
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 549916278}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 195e6ef54b8169840b25882133b09949, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PathRequestManager
 --- !u!1001 &752726995
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -670,6 +684,7 @@ GameObject:
   - component: {fileID: 758429276}
   - component: {fileID: 758429275}
   - component: {fileID: 758429274}
+  - component: {fileID: 758429278}
   m_Layer: 0
   m_Name: Seeker
   m_TagString: Untagged
@@ -766,12 +781,25 @@ Transform:
   m_GameObject: {fileID: 758429273}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.75, y: 0.5, z: 3.75}
+  m_LocalPosition: {x: -29.75, y: 0.5, z: 27.25}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &758429278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 758429273}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78d375420afb9aa45b97fe104a3f7a34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Unit
+  target: {fileID: 1771132487}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -1323,7 +1351,7 @@ Transform:
   m_GameObject: {fileID: 1771132483}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.75, y: 0.5, z: 2.25}
+  m_LocalPosition: {x: 29.75, y: 0.5, z: -25.75}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -1355,7 +1383,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 5, y: 1, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1148292480287686392}
@@ -1476,7 +1504,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3, y: 1, z: 3}
+  m_LocalScale: {x: 7, y: 1, z: 7}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}

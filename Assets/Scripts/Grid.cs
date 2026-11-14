@@ -5,6 +5,7 @@ public class Grid : MonoBehaviour
 {
     //Player stuff is used to check for the node position in the map
     public Transform player;
+    public bool displayGridGizmos = true;
 
     public LayerMask unwalkableMask;
 
@@ -19,10 +20,10 @@ public class Grid : MonoBehaviour
     int gridSizeX;
     int gridSizeY; // Y is pretty much Z 
 
-    //Showing path visual on the map
-    public List<Node> path;
+    //Showing path visual on the map, used on the update function on pathfinding
+    //public List<Node> path;
 
-    private void Start()
+    private void Awake()
     {
         //Nodes area
         nodeDiameter = nodeRadius * 2;
@@ -121,7 +122,7 @@ public class Grid : MonoBehaviour
         //Use y on Vector3 z value
         Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
 
-        if (grid != null)
+        if (grid != null && displayGridGizmos)
         {
             Node playerNode = NodeFromWorldPoint(player.position);
             foreach(Node n in grid)
@@ -131,13 +132,16 @@ public class Grid : MonoBehaviour
                 {
                     Gizmos.color = Color.cyan;
                 }
-                if (path != null)
+
+                //Path between seeker and target, used on the update function on pathfinding
+                /*if (path != null)
                 {
                     if (path.Contains(n))
                     {
                         Gizmos.color = Color.black;
                     }
-                }
+                }*/
+
                 //The 0.1f is for gaps between the cubes
                 Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - 0.1f));
             }

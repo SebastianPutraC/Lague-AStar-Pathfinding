@@ -109,6 +109,10 @@ public class Pathfinding : MonoBehaviour
                         {
                             openSet.Add(neighbour);
                         }
+                        else
+                        {   //Update value for potential lower value of g cost
+                            openSet.UpdateItem(neighbour);
+                        }
                     }
                 }
             }
